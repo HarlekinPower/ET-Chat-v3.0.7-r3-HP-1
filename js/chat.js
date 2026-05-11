@@ -24,6 +24,15 @@ function deleteCookie(key) {
   document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+// =============================================
+// Schriftgröße für Chatinhalt
+// =============================================
+function applyFontSize(size) {
+    if ($('chatinhalt')) {
+        $('chatinhalt').style.fontSize = size + 'px';
+    }
+}
+
 function ET_Chat(){
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -121,6 +130,12 @@ this.start = function(){
 	}
 
 	$('message').focus();
+	// ====================== Gespeicherte Schriftgröße beim Start anwenden ======================
+	var savedFontSize = getCookie('chat_font_size');
+	if (savedFontSize) {
+	    applyFontSize(savedFontSize);
+	}
+	// ===========================================================================================
 	$("message_form").onsubmit = function(){return self.send();} // Wichtig damit beim Submit das Dokument nicht neu geladen wird.
 	$("link_sagen").onclick = function(){return self.send();} // s.o. Zeile.
 
@@ -274,6 +289,19 @@ this.start = function(){
 					if (Event.element(event).id=="sound_privat") {self.sound_status='privat'; $('sound_icon').src="img/sound_privat.png"; self.win_prop.close(); $('message').focus(); }
                 }
 			});
+			// ====================== Schriftgröße ======================
+			var savedSize = getCookie('chat_font_size') || '14';
+			if ($('font_size_select')) {
+			    $('font_size_select').value = savedSize;
+			    applyFontSize(savedSize);
+			}
+
+			Event.observe('font_size_select', 'change', function(){
+			    var size = $('font_size_select').value;
+			    setCookie('chat_font_size', size);
+			    applyFontSize(size);
+			});
+			// ============================================================
 			}
 
 			// ANFANG - Innere Funktionen  im Class Constructor start()  >>> $("link_prop").onclick - Event ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -374,7 +402,24 @@ this.start = function(){
 	$("link_smileys").onclick = function(){ open_close_smileys_win('message'); }
 
     //Lade Fensterinhalt zum Darstellen des Farbenfensters
-	new Ajax.Request("./?Colorizer",{onSuccess:function(result){self.win_color_content=result.responseText;}});
+	new Ajax.Request("./?Colorizer",{
+    onSuccess:function(result){
+        self.win_color_content = result.responseText;
+        
+        // Schriftgröße direkt in Color-Inhalt integrieren
+        self.win_color_content += 
+            '<div style="padding:10px; border:1px solid #ccc; border-radius:4px;">' +
+				'<strong>' + lang_changeFontSize_1 + ' </strong>' +
+				'<select id="colorwin_font_size" style="width:130px; font-size:13px;">' +
+					'<option value="12">' + lang_changeFontSize_2 + '</option>' +
+					'<option value="14" selected>' + lang_changeFontSize_3 + '</option>' +
+					'<option value="16">' + lang_changeFontSize_4 + '</option>' +
+					'<option value="18">' + lang_changeFontSize_5 + '</option>' +
+					'<option value="20">' + lang_changeFontSize_6 + '</option>' +
+				'</select>' +
+			'</div>';
+    }
+	});
 
 	$('message').style.color = "#"+self.textcolor;
 	
@@ -400,6 +445,19 @@ this.start = function(){
 		if (typeof self.win_color!="object"){
 		    self.win_color = new Window({className: self.win_style, width:350, height:205, top:eval(self.mouse_top-265), left:eval(self.mouse_left-180), resizable: false, showEffect:Effect.Appear, hideEffect: Effect.Fade, showEffectOptions: {duration:0.5}, hideEffectOptions: {duration:0.5}, draggable: true, minimizable: false, maximizable: false, destroyOnClose: false, opacity: 1});
 			self.win_color.setHTMLContent(self.win_color_content);
+			// ====================== Schriftgröße ins Farbfenster ======================
+			var savedSize = getCookie('chat_font_size') || '14';
+			if ($('colorwin_font_size')) {
+				$('colorwin_font_size').value = savedSize;
+				applyFontSize(savedSize);
+			}
+
+			Event.observe('colorwin_font_size', 'change', function(){
+				var size = $('colorwin_font_size').value;
+				setCookie('chat_font_size', size);
+				applyFontSize(size);
+			});
+			// ============================================================================
 
 			//(Start) Font Art auswaehlen und in hidden-Inputs eintragen --------------------
 			$("kursiv").onclick = function(){

@@ -119,6 +119,14 @@ class MessagesForJs extends EtChatConfig
 		echo "var lang_changeUserEvent_pwroom_1='".$lang->chat_js[0]->changeuserevent[0]->pwroom[0]->tagData."';\n";
 		echo "var lang_changeUserEvent_pwroom_2='".$lang->chat_js[0]->changeuserevent[0]->pwroom[1]->tagData."';\n";
 		echo "var lang_statuslink='".$lang->chat_js[0]->statuslink[0]->tagData."';\n";
+		
+		echo "var lang_changeFontSize_1='".$lang->chat_js[0]->changefontsize[0]->size_opt[0]->tagData."';\n"; //Schriftgröße
+		echo "var lang_changeFontSize_2='".$lang->chat_js[0]->changefontsize[0]->size_opt[1]->tagData."';\n"; //12 px – klein
+		echo "var lang_changeFontSize_3='".$lang->chat_js[0]->changefontsize[0]->size_opt[2]->tagData."';\n"; //14 px – normal
+		echo "var lang_changeFontSize_4='".$lang->chat_js[0]->changefontsize[0]->size_opt[3]->tagData."';\n"; //16 px – groß
+		echo "var lang_changeFontSize_5='".$lang->chat_js[0]->changefontsize[0]->size_opt[4]->tagData."';\n"; //18 px – sehr groß
+		echo "var lang_changeFontSize_6='".$lang->chat_js[0]->changefontsize[0]->size_opt[5]->tagData."';\n"; //20 px – riesig
+		
 		echo "var lang_status_imgname = new Array();\nvar lang_status_text = new Array();\nvar lang_status_rights = new Array();\n";
 		foreach($lang->chat_js[0]->status as $status_value) echo "lang_status_imgname.push('".$status_value->tagAttrs['imagename']."');\n";
 		foreach($lang->chat_js[0]->status as $status_value) echo "lang_status_text.push('".$status_value->tagData."');\n";

@@ -91,6 +91,14 @@
 			<pwroom>This room is protected. Please enter the password to come in.</pwroom>
 			<pwroom>Your password is wrong!</pwroom>
 		</changeuserevent>
+		<changefontsize>
+			<size_opt>Font size:</size_opt>
+			<size_opt>12 px – small</size_opt>
+			<size_opt>14 px – normal</size_opt>
+			<size_opt>16 px – large</size_opt>
+			<size_opt>18 px – very large</size_opt>
+			<size_opt>20 px – gigantic</size_opt>
+		</changefontsize>
 	</chat_js>
 	<chat_php>
 		<hallo_user>Welcome</hallo_user>

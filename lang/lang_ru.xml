@@ -90,6 +90,14 @@
 			<pwroom>Для вxода в эту комнату необxодимо ввести пароль.</pwroom>
 			<pwroom>Ошибка в пароле!</pwroom>
 		</changeuserevent>
+		<changefontsize>
+			<size_opt>Schriftgröße:</size_opt>
+			<size_opt>12 пикселей – маленький</size_opt>
+			<size_opt>14 пикселей – нормальный</size_opt>
+			<size_opt>16 пикселей – большой</size_opt>
+			<size_opt>18 пикселей – очень большой</size_opt>
+			<size_opt>20 пикселей – огромный</size_opt>
+		</changefontsize>
 	</chat_js>
 	<chat_php>
 		<hallo_user>Привет</hallo_user>
