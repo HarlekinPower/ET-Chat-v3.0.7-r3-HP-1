@@ -289,61 +289,40 @@ this.start = function(){
 					if (Event.element(event).id=="sound_privat") {self.sound_status='privat'; $('sound_icon').src="img/sound_privat.png"; self.win_prop.close(); $('message').focus(); }
                 }
 			});
-			// ====================== Schriftgröße ======================
-			var savedSize = getCookie('chat_font_size') || '14';
-			if ($('font_size_select')) {
-			    $('font_size_select').value = savedSize;
-			    applyFontSize(savedSize);
 			}
-
-			Event.observe('font_size_select', 'change', function(){
-			    var size = $('font_size_select').value;
-			    setCookie('chat_font_size', size);
-			    applyFontSize(size);
-			});
-			// ============================================================
-			}
-
 			// ANFANG - Innere Funktionen  im Class Constructor start()  >>> $("link_prop").onclick - Event ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			//Versenet neues MOD PW
 			var submit_pw = function(){
 				if ($('pwchange_field').value.length<1) return false;
-				new Ajax.Request(
-                 		"./?ChangePw",
-                		 {
-               		  		onSuccess: function(result){
-               		  			if (result.responseText==1){
-               		  				Effect.toggle('pwchange_div', 'blind', {duration: 0.4});
-               		  				self.win_prop.close();
-               		  			}
-               		  			else alert('Error!\n\n'+result.responseText);
-               		  		},
-               		  		postBody: "modpw="+$('pwchange_field').value
-                		 }
-                 );
+				new Ajax.Request("./?ChangePw", {
+					onSuccess: function(result){
+						if (result.responseText==1){
+							Effect.toggle('pwchange_div', 'blind', {duration: 0.4});
+							self.win_prop.close();
+						}
+						else alert('Error!\n\n'+result.responseText);
+					},
+					postBody: "modpw="+$('pwchange_field').value
+				});
 				return false;
-			}
+			};
 
 
 			//Verändert Userstatus
 			var submit_status = function(img, text){
-
-				new Ajax.Request(
-                 		"./?ChangeStatus",
-                		 {
-               		  		onSuccess: function(result){
-               		  			if (result.responseText==1){
-               		  				Effect.toggle('stat_change_div', 'blind', {duration: 0.4});
-               		  				self.win_prop.close();
-									setTimeout( updateUserOnlineAnzeigeAfterRoomChange ,300);
-               		  			}
-               		  			else alert('Error!\n\n'+result.responseText);
-               		  		},
-               		  		postBody: "img="+img+"&text="+text
-                		 }
-                 );
+				new Ajax.Request("./?ChangeStatus", {
+					onSuccess: function(result){
+						if (result.responseText==1){
+							Effect.toggle('stat_change_div', 'blind', {duration: 0.4});
+							self.win_prop.close();
+							setTimeout(updateUserOnlineAnzeigeAfterRoomChange, 300);
+						}
+						else alert('Error!\n\n'+result.responseText);
+					},
+					postBody: "img="+img+"&text="+text
+				});
 				return false;
-			}
+			};
 			// ENDE - Innere Funktionen  im Class Constructor start()  >>> $("link_prop").onclick - Event ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             // Ist dass Fenster bereits sichtbar?
