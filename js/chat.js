@@ -1203,10 +1203,6 @@ var updateUserOnlineAnzeige = function(ajaxResultJSON) {
 								 //status ----
 								 if (!jsonObj.userOnline[i].user_simg.empty()) var user_status_anz = " <img src=\"img/"+jsonObj.userOnline[i].user_simg+".png\" alt=\""+jsonObj.userOnline[i].user_stext+"\" title=\""+jsonObj.userOnline[i].user_stext+"\">";
 								 else var user_status_anz = "";
-
-							     //hide User
-							     if (!jsonObj.userOnline[i].user_simg.empty() && jsonObj.userOnline[i].user_simg=='status_invisible') var user_style="display:none;";
-							     else var user_style="";
 								 
 								 // strike user
 								if (jsonObj.userOnline[i].user.slice(0, 8) == '<strike>'){
@@ -1218,7 +1214,8 @@ var updateUserOnlineAnzeige = function(ajaxResultJSON) {
                                  	if (jsonObj.userOnline[i].user_sex=="m") var gender_icon="user_comment_m_self.png";
                                  	if (jsonObj.userOnline[i].user_sex=="f") var gender_icon="user_comment_w_self.png";
                                  	if (jsonObj.userOnline[i].user_sex=="n") var gender_icon="user_comment_n_self.png";
-                                 	inner_html+="<div id=\"user_div_"+jsonObj.userOnline[i].user_id+"\" style=\""+user_style+"\">\
+                                 	if (jsonObj.userOnline[i].user_simg!='status_invisible') {
+										inner_html+="<div id=\"user_div_"+jsonObj.userOnline[i].user_id+"\">\
 													<div style=\"float:left;\">\
 														<img src=\"img/"+gender_icon+"\" width=\"16\" height=\"16\" /> \
 														<span id=\"user_"+jsonObj.userOnline[i].user_id+"\"><b>"+admin_user+jsonObj.userOnline[i].user+"</b></span>\
@@ -1226,12 +1223,14 @@ var updateUserOnlineAnzeige = function(ajaxResultJSON) {
 													<div style=\"float:right; margin-right: 2px;\">"+usr_priv+user_status_anz+"</div>\
 													<div style=\"clear:both\"></div>\
 												</div>";
+									}
                                  }
                                  else{
                                  	if (jsonObj.userOnline[i].user_sex=="m") var gender_icon="user_comment_m.png";
                                  	if (jsonObj.userOnline[i].user_sex=="f") var gender_icon="user_comment_w.png";
                                  	if (jsonObj.userOnline[i].user_sex=="n") var gender_icon="user_comment_n.png";
-                                 	inner_html+="<div id=\"user_div_"+jsonObj.userOnline[i].user_id+"\" style=\""+user_style+"\">\
+                                 	if (jsonObj.userOnline[i].user_simg!='status_invisible') {
+										inner_html+="<div id=\"user_div_"+jsonObj.userOnline[i].user_id+"\">\
 													<div style=\"float:left;\">\
 														<img src=\"img/"+gender_icon+"\" id=\"user_"+jsonObj.userOnline[i].user_id+"\" style=\"cursor:pointer\" title=\""+lang_updateUserOnlineAnzeige_3+"\" alt=\""+lang_updateUserOnlineAnzeige_3+"\" />\
 														<span id=\"infoblock_"+jsonObj.userOnline[i].user_id+"\" style=\""+user_style2+"cursor:pointer\" >"+admin_user+jsonObj.userOnline[i].user+"</span>\
@@ -1239,6 +1238,7 @@ var updateUserOnlineAnzeige = function(ajaxResultJSON) {
 													<div style=\"float:right; margin-right: 2px;\">"+usr_priv+user_status_anz+"</div>\
 													<div style=\"clear:both\"></div>\
 												</div>";
+									}
                                  }
                                  if (self.user_id==jsonObj.userOnline[i].user_id) var aktuell_room="room_"+aktuelle_room_id;
 
