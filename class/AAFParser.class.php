@@ -89,16 +89,12 @@ class AAFParser
         $this->parser = xml_parser_create("UTF-8");
         
         //Set the handlers
-        xml_set_object($this->parser, $this);
-        xml_set_element_handler($this->parser, 'StartElement', 'EndElement');
-        xml_set_character_data_handler($this->parser, 'CharacterData');
+        xml_set_element_handler($this->parser, [$this, 'StartElement'], [$this, 'EndElement']);
+		xml_set_character_data_handler($this->parser, [$this, 'CharacterData']);
 
         //Error handling
         if (!xml_parse($this->parser, $this->xml))
             $this->HandleError(xml_get_error_code($this->parser), xml_get_current_line_number($this->parser), xml_get_current_column_number($this->parser));
-
-        //Free the parser
-        xml_parser_free($this->parser);
     }
     
     /**
@@ -222,6 +218,7 @@ class AAFParser
  *
  * @version 1.3.0
  */
+#[AllowDynamicProperties]
 class XMLTag
 {
     /**
