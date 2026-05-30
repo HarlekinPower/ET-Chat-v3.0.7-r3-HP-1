@@ -12,12 +12,16 @@
 <script type="text/javascript">
 
 window.onload = function() {
-	$('site_selecter').onchange = function() {
-		location.href='./?AdminRegUserIndex&site='+$('site_selecter').value;
+	if($('site_selecter')) {
+		$('site_selecter').onchange = function() {
+			location.href='./?AdminRegUserIndex&site='+$('site_selecter').value;
+		}
 	}
 	
-	$('order_by').onchange = function() {
-		location.href='./?AdminRegUserIndex&order='+$('order_by').value;
+	if($('order_by')) {
+		$('order_by').onchange = function() {
+			location.href='./?AdminRegUserIndex&order='+$('order_by').value;
+		}
 	}
 }
 
