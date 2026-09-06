@@ -46,8 +46,12 @@ class AdminInsertUser extends DbConectionMaker
 
          $_POST['user'] = htmlentities($_POST['user'], ENT_QUOTES, "UTF-8");
          $_POST['priv'] = htmlentities($_POST['priv'], ENT_QUOTES, "UTF-8");
-         if (!empty($_POST['pw'])) $_POST['pw'] = "'".md5($_POST['pw'])."'";
-		 else $_POST['pw'] = "NULL";
+         if (!empty($_POST['pw'])) {
+             $hashedPw = password_hash($_POST['pw'], PASSWORD_DEFAULT);
+             $_POST['pw'] = "'".$hashedPw."'";
+         } else {
+             $_POST['pw'] = "NULL";
+         }
 
          // Test if the user exists in the DB
          $res = $this->dbObj->sqlGet("select etchat_user_id FROM {$this->_prefix}etchat_user where etchat_username = '".$_POST['user']."'");

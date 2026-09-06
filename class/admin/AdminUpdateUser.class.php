@@ -40,7 +40,11 @@ class AdminUpdateUser extends DbConectionMaker
 		
 		if ($_SESSION['etchat_'.$this->_prefix.'user_priv']=="admin" && !empty($_POST['id'])){
 			
-		$pass = (!empty($_POST['pw'])) ? "etchat_userpw = '".md5($_POST['pw'])."'," : "";
+		$pass = "";
+		if (!empty($_POST['pw'])) {
+			$hashedPw = password_hash($_POST['pw'], PASSWORD_DEFAULT);
+			$pass = "etchat_userpw = '".$hashedPw."',";
+		}
 
         if ($_POST['priv']=="mod"){
 			// Test if there any Admins in the DB now

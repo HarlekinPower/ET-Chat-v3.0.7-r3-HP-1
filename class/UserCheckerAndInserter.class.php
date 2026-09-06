@@ -117,7 +117,7 @@ class UserCheckerAndInserter extends EtChatConfig
 	* @return void
 	*/
 	private function userWithPw(){
-		if ($this->_user_exists[0][2]==md5($this->_pw)){
+		if (!empty($this->_user_exists[0][2]) && password_verify($this->_pw, $this->_user_exists[0][2])) {
 			$_SESSION['etchat_'.$this->_prefix.'user_id'] = $this->_user_exists[0][0];
 			$_SESSION['etchat_'.$this->_prefix.'username'] = $this->_user_exists[0][1];
 			$_SESSION['etchat_'.$this->_prefix.'user_priv'] = $this->_user_exists[0][3];

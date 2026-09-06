@@ -33,7 +33,7 @@ class UnregisterPw extends DbConectionMaker
 		$userprivilegien = $this->dbObj->sqlGet("select etchat_userprivilegien, etchat_userpw from {$this->_prefix}etchat_user WHERE etchat_user_id = ".(int)$_SESSION['etchat_'.$this->_prefix.'user_id']);
 		
 		if ($userprivilegien[0][0]=="admin" || $userprivilegien[0][0]=="mod" || $userprivilegien[0][0]=="user"){
-			if($userprivilegien[0][1]==md5($_POST['user_pw'])){
+			if (!empty($userprivilegien[0][1] && password_verify($_POST['user_pw'], $userprivilegien[0][1])) {
 				$this->dbObj->sqlSet("UPDATE {$this->_prefix}etchat_user SET 
 					etchat_userpw = NULL,  
 					etchat_userprivilegien = 'gast',

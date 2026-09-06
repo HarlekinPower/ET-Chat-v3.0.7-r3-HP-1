@@ -35,7 +35,8 @@ class ChangePw extends DbConectionMaker
 		if ($userprivilegien[0][0]=="admin" || $userprivilegien[0][0]=="mod" || $userprivilegien[0][0]=="user"){
 			
 			if(!empty($_POST['modpw'])){
-				$this->dbObj->sqlSet("UPDATE {$this->_prefix}etchat_user SET etchat_userpw = '".md5($_POST['modpw'])."' WHERE etchat_user_id = ".(int)$_SESSION['etchat_'.$this->_prefix.'user_id']);
+				$newHash = password_hash($_POST['modpw'], PASSWORD_DEFAULT);
+				$this->dbObj->sqlSet("UPDATE {$this->_prefix}etchat_user SET etchat_userpw = '".$newHash."' WHERE etchat_user_id = ".(int)$_SESSION['etchat_'.$this->_prefix.'user_id']);
 				echo "1";
 			} else 
 				echo "Error! You shouldn't be here.";
@@ -52,7 +53,8 @@ class ChangePw extends DbConectionMaker
 			else{	
 				setcookie("cookie_etchat_nik_registered", "1", ["expires"  => time()+(24*3600), "path" => "/", "samesite" => "lax"]);
 				//setcookie("cookie_etchat_nik_registered", "1");
-				$this->dbObj->sqlSet("UPDATE {$this->_prefix}etchat_user SET etchat_userpw = '".md5($_POST['user_pw'])."', etchat_userprivilegien='user', etchat_reg_timestamp=now(), etchat_reg_ip='".$_SERVER['REMOTE_ADDR']."' WHERE etchat_user_id = ".(int)$_SESSION['etchat_'.$this->_prefix.'user_id']);
+				$newHash = password_hash($_POST['user_pw'], PASSWORD_DEFAULT);
+				$this->dbObj->sqlSet("UPDATE {$this->_prefix}etchat_user SET etchat_userpw = '".$newHash."', etchat_userprivilegien='user', etchat_reg_timestamp=now(), etchat_reg_ip='".$_SERVER['REMOTE_ADDR']."' WHERE etchat_user_id = ".(int)$_SESSION['etchat_'.$this->_prefix.'user_id']);
 				echo "1";
 			}
 		}
