@@ -7,139 +7,140 @@
 ############################################################################*/
 
 function setCookie(key, value, sameSite) {
-  var expires = new Date();
-  expires.setTime(expires.getTime() + 31536000000); // 1 Jahr
-  var cookieString = key + '=' + value + ';expires=' + expires.toUTCString();
-  if (sameSite) {
-    cookieString += ';SameSite=' + sameSite;
-  }
-  document.cookie = cookieString;
+	var expires = new Date();
+	expires.setTime(expires.getTime() + 31536000000); // 1 Jahr
+	var cookieString = key + '=' + value + ';expires=' + expires.toUTCString();
+	if (sameSite) {
+		cookieString += ';SameSite=' + sameSite;
+	}
+	
+	document.cookie = cookieString;
 }
 
 function getCookie(key) {
-var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
-return keyValue ? keyValue[2] : null;}
+	var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+	return keyValue ? keyValue[2] : null;
+}
 
 function deleteCookie(key) {
-  document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 // =============================================
 // Schriftgröße für Chatinhalt
 // =============================================
 function applyFontSize(size) {
-    if ($('chatinhalt')) {
-        $('chatinhalt').style.fontSize = size + 'px';
-    }
+	if ($('chatinhalt')) {
+		$('chatinhalt').style.fontSize = size + 'px';
+	}
 }
 
 function ET_Chat(){
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// (Start) Deklaration globaler Attribute im Class ------------------------------------------------------------
+	var self = this;
+	this.time_last_req=0;						//(privat) Zeit im Milisek seit der letzten AJAX-Anfrage
+	this.time_last_send=0;						//(privat) Zeit im Milisek seit der letzten Message from User
+	this.inactivity_message_flag=false;			//(privat) TRUE wenn bereits eine Systemwarnmeldung an den User gesendet wurde
+	this.active_get_message_req=false;			//(privat) TRUE wenn gerade eine ReloaderMessage Anfrage ueber AJAX laeuft
+	this.interval_for_inactivity=1800000;		//(public) Wie lange darf der User nichts schreiben bis er aus dem Chat rausfliegt
+	this.allowed_privates_in_separate_win = true;
+	this.allowed_privates_in_chat_win = true;
+	this.anbindung_an_userverwaltung;			//(privat) Wenn die Userverwaltung benutzt wird, soll der Mon kein PW ändern
+	this.reload_interval;						//(public) Reloadzeit
+	this.show_history_all_user;					//(public) [bool] Soll die History fuer alle Gezeigt wrden oder nur Admin/Mod-Team
+	this.allow_nick_registration;				//(public) [bool] Registrierung der Namen erlauben
+	this.set_sys_messages = true;				//(public) [bool] Show sys messages
+	this.messages_im_chat;						//(public) Anz. der Mess. im Fenster
+	this.username="";							//(public)
+	this.user_id="";							//(public)
+	this.set_dynamic_height;					//(public)
+	this.textcolor;								//(public)
+	this.mouse_top=0;							//(privat) Cursorkoordueberwachung
+	this.mouse_left=0;							//(privat) Cursorkoordueberwachung
+	this.win_block = Array();					//(privat) Window-Object-Array zum Userblokieren
+	this.win_block_ids = Array();			
+	this.win_private = Array();					//(privat) Window-Object-Array private message window
+	this.win_admin_user = Array();				//(privat) Window-Object-Array zum Useradministrrieren
+	this.win_color;								//(privat) Window-Object zum Darstellen der Colorauswahl
+	this.win_color_content;						//(privat) Inhalt des Colorfensters wird ueber AJAX onLoad gefuellt
+	this.win_smileys;							//(privat) Window-Object zum Darstellen der Smileys
+	this.win_smileys_content;					//(privat) Inhalt des Smileysfensters wird ueber AJAX onLoad gefuellt
+	this.win_style;								//(public) Festlegung der Windowstyle fuer alle Windows im Chat
+	this.win_prop;								//(privat) Window Zusatzfeatures
+	this.win_history;							//(privat) Window History
+	this.jsonObjUserGlobal;						//(privat) Message JSON Array.
+	this.userPrivilegienGlobal;					//(public) Privilegien z.B.: Gast,User,Moderator,Admin
+	this.privat_an;								//(privat) Privat an User-ID
+	this.sound_status="none";					//(privat) Wann soll der Sound kommen, bei allen Messages oder nur Privat
+	this.soundManager;
+	this.audioBuffer = Array();
+	this.random_user_number;					//(public) generated user number to protect http GET requests
+	this.title = document.title;
+	this.intv_title_blink; 
+	this.window_focused = true;
+	// (Stop) Deklaration globaler Attribute im Class -------------------------------------------------------------
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// (Start) Deklaration globaler Attribute im Class ------------------------------------------------------------
-var self = this;
-this.time_last_req=0;						//(privat) Zeit im Milisek seit der letzten AJAX-Anfrage
-this.time_last_send=0;						//(privat) Zeit im Milisek seit der letzten Message from User
-this.inactivity_message_flag=false;			//(privat) TRUE wenn bereits eine Systemwarnmeldung an den User gesendet wurde
-this.active_get_message_req=false;			//(privat) TRUE wenn gerade eine ReloaderMessage Anfrage ueber AJAX laeuft
-this.interval_for_inactivity=1800000;		//(public) Wie lange darf der User nichts schreiben bis er aus dem Chat rausfliegt
-this.allowed_privates_in_separate_win = true;
-this.allowed_privates_in_chat_win = true;
-this.anbindung_an_userverwaltung;			//(privat) Wenn die Userverwaltung benutzt wird, soll der Mon kein PW ändern
-this.reload_interval;						//(public) Reloadzeit
-this.show_history_all_user;					//(public) [bool] Soll die History fuer alle Gezeigt wrden oder nur Admin/Mod-Team
-this.allow_nick_registration;				//(public) [bool] Registrierung der Namen erlauben
-this.set_sys_messages = true;				//(public) [bool] Show sys messages
-this.messages_im_chat;						//(public) Anz. der Mess. im Fenster
-this.username="";							//(public)
-this.user_id="";							//(public)
-this.set_dynamic_height;					//(public)
-this.textcolor;								//(public)
-this.mouse_top=0;							//(privat) Cursorkoordueberwachung
-this.mouse_left=0;							//(privat) Cursorkoordueberwachung
-this.win_block = Array();					//(privat) Window-Object-Array zum Userblokieren
-this.win_block_ids = Array();			
-this.win_private = Array();					//(privat) Window-Object-Array private message window
-this.win_admin_user = Array();				//(privat) Window-Object-Array zum Useradministrrieren
-this.win_color;								//(privat) Window-Object zum Darstellen der Colorauswahl
-this.win_color_content;						//(privat) Inhalt des Colorfensters wird ueber AJAX onLoad gefuellt
-this.win_smileys;							//(privat) Window-Object zum Darstellen der Smileys
-this.win_smileys_content;					//(privat) Inhalt des Smileysfensters wird ueber AJAX onLoad gefuellt
-this.win_style;								//(public) Festlegung der Windowstyle fuer alle Windows im Chat
-this.win_prop;								//(privat) Window Zusatzfeatures
-this.win_history;							//(privat) Window History
-this.jsonObjUserGlobal;						//(privat) Message JSON Array.
-this.userPrivilegienGlobal;					//(public) Privilegien z.B.: Gast,User,Moderator,Admin
-this.privat_an;								//(privat) Privat an User-ID
-this.sound_status="none";					//(privat) Wann soll der Sound kommen, bei allen Messages oder nur Privat
-this.soundManager;
-this.audioBuffer = Array();
-this.random_user_number;					//(public) generated user number to protect http GET requests
-this.title = document.title;
-this.intv_title_blink; 
-this.window_focused = true;
-// (Stop) Deklaration globaler Attribute im Class -------------------------------------------------------------
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// (Start) Konstruktor der Class ET_Chat wird onLoad ausgefuehrt -----------------------------------------------
+	this.start = function(){
 
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// (Start) Konstruktor der Class ET_Chat wird onLoad ausgefuehrt -----------------------------------------------
-this.start = function(){
-
-	if ( Prototype.Browser.IE ) {
-		document.onfocusin = function(e) {
-			self.window_focused = true;
-			try{ window.clearInterval(self.intv_title_blink) } catch (e) {/*nix*/}
-			document.title = self.title;
+		if ( Prototype.Browser.IE ) {
+			document.onfocusin = function(e) {
+				self.window_focused = true;
+				try{ window.clearInterval(self.intv_title_blink) } catch (e) {/*nix*/}
+				document.title = self.title;
+			}
+			document.onfocusout = function(e) {
+				self.window_focused = false;
+			}
+		} else {	
+			window.onfocus = function(e) {
+				self.window_focused = true;
+				try{ window.clearInterval(self.intv_title_blink) } catch (e) {/*nix*/}
+				document.title = self.title;
+			}
+			window.onblur = function(e) {
+				self.window_focused = false;
+			}
 		}
-		document.onfocusout = function(e) {
-			self.window_focused = false;
-		}
-	} else {	
-		window.onfocus = function(e) {
-			self.window_focused = true;
-			try{ window.clearInterval(self.intv_title_blink) } catch (e) {/*nix*/}
-			document.title = self.title;
-		}
-		window.onblur = function(e) {
-			self.window_focused = false;
-		}
-	}
 					
-	// Adminbereich
-	if (self.userPrivilegienGlobal=="admin"){
-		$("form_right").innerHTML+="&nbsp;&nbsp;&nbsp;<img id=\"link_admin\" class=\"img_button\" src=\"img/admin.png\" width=\"32\" height=\"32\" border=\"0\" alt=\"Admin\" title=\"Admin\">";
-    	$("link_admin").onclick = function(){
-    	var hoehe = $('chatinhalt').getHeight();
-   		var breite = $('chatinhalt').getWidth();
-    	var win_admin = new Window({url: "./?AdminIndex", className: self.win_style, width:breite, height:hoehe, top:20, left:10, resizable: true, showEffect:Effect.Appear, hideEffect: Effect.Fade, showEffectOptions: {duration:0.5}, hideEffectOptions: {duration:0.5}, draggable: true, minimizable: true, maximizable: true, destroyOnClose: true });
-    	//win_prop.maximize();
-    	win_admin.show();
-    }
-    }
+		// Adminbereich
+		if (self.userPrivilegienGlobal=="admin"){
+			$("form_right").innerHTML+="&nbsp;&nbsp;&nbsp;<img id=\"link_admin\" class=\"img_button\" src=\"img/admin.png\" width=\"32\" height=\"32\" border=\"0\" alt=\"Admin\" title=\"Admin\">";
+			$("link_admin").onclick = function(){
+				var hoehe = $('chatinhalt').getHeight();
+				var breite = $('chatinhalt').getWidth();
+				var win_admin = new Window({url: "./?AdminIndex", className: self.win_style, width:breite, height:hoehe, top:20, left:10, resizable: true, showEffect:Effect.Appear, hideEffect: Effect.Fade, showEffectOptions: {duration:0.5}, hideEffectOptions: {duration:0.5}, draggable: true, minimizable: true, maximizable: true, destroyOnClose: true });
+				//win_prop.maximize();
+				win_admin.show();
+			}
+		}
 
-	AjaxReadRequest();	// Erste Messageabfrage beim Start
-	setInterval(AjaxReadRequest, this.reload_interval); // Interval fuer regelmaesige Abfragen setzen.
+		AjaxReadRequest();	// Erste Messageabfrage beim Start
+		setInterval(AjaxReadRequest, this.reload_interval); // Interval fuer regelmaesige Abfragen setzen.
 
-	// autocomplete="off" ist nicht XHTML valide deshalb ueber JS
-	$("message").setAttribute("autocomplete", "off");
+		// autocomplete="off" ist nicht XHTML valide deshalb ueber JS
+		$("message").setAttribute("autocomplete", "off");
 
-	// Passt die Hoehe des Chatinhalts immer auf die Hoehe des fensters. Also height 100%
-	if(this.set_dynamic_height){
-		window_height();
-		setInterval(window_height, 200);
-	}
+		// Passt die Hoehe des Chatinhalts immer auf die Hoehe des fensters. Also height 100%
+		if(this.set_dynamic_height){
+			window_height();
+			setInterval(window_height, 200);
+		}
 
-	$('message').focus();
-	// ====================== Gespeicherte Schriftgröße beim Start anwenden ======================
-	var savedFontSize = getCookie('chat_font_size');
-	if (savedFontSize) {
-	    applyFontSize(savedFontSize);
-	}
-	// ===========================================================================================
-	$("message_form").onsubmit = function(){return self.send();} // Wichtig damit beim Submit das Dokument nicht neu geladen wird.
-	$("link_sagen").onclick = function(){return self.send();} // s.o. Zeile.
+		$('message').focus();
+		// ====================== Gespeicherte Schriftgröße beim Start anwenden ======================
+		var savedFontSize = getCookie('chat_font_size');
+		if (savedFontSize) {
+			applyFontSize(savedFontSize);
+		}
+		// ===========================================================================================
+		$("message_form").onsubmit = function(){return self.send();} // Wichtig damit beim Submit das Dokument nicht neu geladen wird.
+		$("link_sagen").onclick = function(){return self.send();} // s.o. Zeile.
 
-	$("link_prop").onclick = function(){
+		$("link_prop").onclick = function(){
 
 			// Wenn das Fenster noch nicht existiert, muss es erzeugt und befuellt werden
 			if (typeof self.win_prop!="object"){
@@ -223,20 +224,60 @@ this.start = function(){
 							if(Event.element(event).id=="cancel_register") win_register_user.close();
 							if(Event.element(event).id=="make_register") {
 							
-								if ($('pw_register_field').value==$('pw_register_field2').value)
-									new Ajax.Request(
-										"./?ChangePw",
-										{
+								var pw = $('pw_register_field').value;
+								var pw2 = $('pw_register_field2').value;
+								function resetFieldsAndFocus() {
+									$('pw_register_field').value = '';
+									$('pw_register_field2').value = '';
+									$('pw_register_field').focus();
+								}
+								
+								function validatePassword(pw) {
+									if (pw.length > 64) {
+										alert(lang_start_reg_error1);
+										resetFieldsAndFocus();
+										return false;
+									} else if (pw.length < 8) {
+										alert(lang_start_reg_error2);
+										resetFieldsAndFocus();
+										return false;
+									} else if (!/[A-Z]/.test(pw)) {
+										alert(lang_start_reg_error3);
+										resetFieldsAndFocus();
+										return false;
+									} else if (!/[a-z]/.test(pw)) {
+										alert(lang_start_reg_error4);
+										resetFieldsAndFocus();
+										return false;
+									} else if (!/[!#$%&/()=-_?+*.,:;@]/.test(pw)) {
+										alert(lang_start_reg_error5);
+										resetFieldsAndFocus();
+										return false;
+									} else if (!/[0-9]/.test(pw)) {
+										alert(lang_start_reg_error);
+										resetFieldsAndFocus();
+										return false;
+									}
+								
+									return true;
+								}
+								
+								validatePassword(pw)
+								
+								if (pw==pw2) {
+									new Ajax.Request("./?ChangePw", {
 										onSuccess: function(result){
 											if (result.responseText==1){
 												win_register_user.setHTMLContent('<div id="register_formular">'+lang_start_reg_after_registering+'<br /><br /><a href="./?Logout&random_user_number='+self.random_user_number+'&r='+$("room").value+'">'+lang_start_reg_after_registering_link+'</a></div>');
+
+											} else {
+												alert('Error!\n\n'+result.responseText);
 											}
-											else alert('Error!\n\n'+result.responseText);
 										},
-										postBody: "user_pw="+$('pw_register_field').value
+										postBody: "user_pw="+pw
 										}
 									);
-								else{
+								} else {
 									alert(lang_start_reg_error);
 									$('pw_register_field').value='';
 									$('pw_register_field2').value='';
@@ -247,7 +288,6 @@ this.start = function(){
 						win_register_user.show();
 						$("register_form").onsubmit = function(){return false;}
 					}
-					
 					
 					if (Event.element(event).id=="unregister_name") {
 						
@@ -293,19 +333,46 @@ this.start = function(){
 			// ANFANG - Innere Funktionen  im Class Constructor start()  >>> $("link_prop").onclick - Event ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			//Versenet neues MOD PW
 			var submit_pw = function(){
-				if ($('pwchange_field').value.length<1) return false;
+				var pw = $('pwchange_field').value;
+				if (pw.length > 64) {
+					alert(lang_start_reg_error1);
+					$('pwchange_field').value = '';
+					return false;
+				} else if (pw.length < 8) {
+					alert(lang_start_reg_error2);
+					$('pwchange_field').value = '';
+					return false;
+				} else if (!/[A-Z]/.test(pw)) {
+					alert(lang_start_reg_error3);
+					$('pwchange_field').value = '';
+					return false;
+				} else if (!/[a-z]/.test(pw)) {
+					alert(lang_start_reg_error4);
+					$('pwchange_field').value = '';
+					return false;
+				} else if (!/[!#$%&\/()=\\-_?+*.,:;@]/.test(pw)) {
+					alert(lang_start_reg_error5);
+					$('pwchange_field').value = '';
+					return false;
+				} else if (!/[0-9]/.test(pw)) {
+					alert(lang_start_reg_error6);
+					$('pwchange_field').value = '';
+					return false;
+				}
+				
 				new Ajax.Request("./?ChangePw", {
 					onSuccess: function(result){
-						if (result.responseText==1){
+						if (result.responseText==1) {
 							Effect.toggle('pwchange_div', 'blind', {duration: 0.4});
 							self.win_prop.close();
+						} else {
+							alert('Error!\n\n'+result.responseText);
 						}
-						else alert('Error!\n\n'+result.responseText);
 					},
 					postBody: "modpw="+$('pwchange_field').value
 				});
 				return false;
-			};
+			}
 
 
 			//Verändert Userstatus

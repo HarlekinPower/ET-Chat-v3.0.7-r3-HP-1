@@ -21,7 +21,13 @@
 			<befor_registering>By assigning a password, you can reserve your chat name permanently.</befor_registering>
 			<after_registering>Thank you for your registration. When you re-sign in the chat you will be prompted to enter your password.</after_registering>
 			<after_registering_link>Leave the chat</after_registering_link>
-			<error>Passwords are not identical! Please correct.</error>
+			<error>The passwords are not identical! Please correct.</error> 
+			<error>The password is too long! Please correct.</error> 
+			<error>The password is too short! Please correct.</error> 
+			<error>The password does not have a capital letter! Please correct.</error> 
+			<error>The password does not have a lowercase letter! Please correct.</error> 
+			<error>The password has no special characters! Please correct.</error> 
+			<error>The password has no number! Please correct.</error>
 		</start_prop_register>
 		<remove_pw_win>
 			<title>Remove password-protection for:</title>

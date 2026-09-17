@@ -71,7 +71,13 @@ class MessagesForJs extends EtChatConfig
 		echo "var lang_start_reg_befor_registering='".$lang->chat_js[0]->start_prop_register[0]->befor_registering[0]->tagData."';\n";
 		echo "var lang_start_reg_after_registering='".$lang->chat_js[0]->start_prop_register[0]->after_registering[0]->tagData."';\n";
 		echo "var lang_start_reg_after_registering_link='".$lang->chat_js[0]->start_prop_register[0]->after_registering_link[0]->tagData."';\n";
-		echo "var lang_start_reg_error='".$lang->chat_js[0]->start_prop_register[0]->error[0]->tagData."';\n";
+		echo "var lang_start_reg_error='".$lang->chat_js[0]->start_prop_register[0]->error[0]->tagData."';n";
+		echo "var lang_start_reg_error1='".$lang->chat_js[0]->start_prop_register[0]->error[1]->tagData."';n";
+		echo "var lang_start_reg_error2='".$lang->chat_js[0]->start_prop_register[0]->error[2]->tagData."';n";
+		echo "var lang_start_reg_error3='".$lang->chat_js[0]->start_prop_register[0]->error[3]->tagData."';n";
+		echo "var lang_start_reg_error4='".$lang->chat_js[0]->start_prop_register[0]->error[4]->tagData."';n";
+		echo "var lang_start_reg_error5='".$lang->chat_js[0]->start_prop_register[0]->error[5]->tagData."';n";
+		echo "var lang_start_reg_error6='".$lang->chat_js[0]->start_prop_register[0]->error[6]->tagData."';n";
 		
 		echo "var lang_start_1='".$lang->chat_js[0]->start[0]->tagData."';\n";
 		

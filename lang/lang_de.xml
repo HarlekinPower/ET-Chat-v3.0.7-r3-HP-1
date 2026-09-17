@@ -21,7 +21,13 @@
 			<befor_registering>Durch die Vergabe eines Passwortes können Sie Ihren Chatnamen dauerhaft reservieren.</befor_registering>
 			<after_registering>Vielen Dank für Ihre Registrierung. Beim erneuten Anmelden im Chat werden Sie zur Passworteingabe aufgefordert.</after_registering>
 			<after_registering_link>Chat verlassen</after_registering_link>
-			<error>Passwörter sind nicht identisch! Bitte korrigieren.</error>
+			<error>Die Passwörter sind nicht identisch! Bitte korrigieren.</error>
+			<error>Das Passwort ist zu lang! Bitte korrigieren.</error>
+			<error>Das Passwort ist zu kurz! Bitte korrigieren.</error>
+			<error>Das Passwort hat keinen Grossbuchstaben! Bitte korrigieren.</error>
+			<error>Das Passwort hat keinen Kleinbuchstaben! Bitte korrigieren.</error>
+			<error>Das Passwort hat keinen Sonderzeichen! Bitte korrigieren.</error>
+			<error>Das Passwort hat keine Zahl! Bitte korrigieren.</error>
 		</start_prop_register>
 		<remove_pw_win>
 			<title>Passwortschutz aufheben für:</title>
